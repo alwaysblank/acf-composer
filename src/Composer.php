@@ -59,7 +59,7 @@ class Composer
             return;
         }
 
-        add_action('init', function () use ($callback) {
+        $composer = function() use ($callback) {
             if ($this->defaults->has('field_group')) {
                 $this->fields = array_merge($this->fields, $this->defaults->get('field_group'));
             }
@@ -69,7 +69,13 @@ class Composer
             }
 
             acf_add_local_field_group($this->build());
-        }, 20);
+        };
+
+        if (is_admin()) {
+            add_action('admin_menu', $composer);
+        } else {
+            add_action('acf/init', $composer);
+        }
     }
 
    /**
